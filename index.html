@@ -66,8 +66,15 @@ footer{text-align:center;color:var(--muted);padding:10px 16px 30px;font-size:13p
 </div>
 <details>
 <summary>Advanced production settings</summary>
-<label for="kind">Book type</label><select id="kind"><option>Practical self-help book</option><option>Short companion booklet</option><option>Workbook / action guide</option><option>Other nonfiction</option></select>
-<label for="copyright">Copyright page wording</label><textarea id="copyright">Copyright © 2026 Smart Richard. All rights reserved. Please do not reproduce, redistribute, sell, or alter this book without permission.</textarea>
+<label for="kind">Book type</label><select id="kind"><option value="Practical self-help book">Practical self-help book — commercial</option><option value="Short companion booklet">Short companion booklet — free sharing-friendly edition</option><option value="Workbook / action guide">Workbook / action guide — commercial</option><option value="Other nonfiction">Other nonfiction — commercial</option></select>
+<label for="copyright">Copyright page wording (auto-set by book type; editable)</label><textarea id="copyright">Copyright © 2026 Smart Richard. All rights reserved.
+
+No part of this book may be reproduced, copied, distributed, republished, or transmitted in any form or by any means, whether electronic or mechanical, without prior written permission from the author, except for brief quotations used in reviews, criticism, or other uses permitted by applicable copyright law.
+
+This book may not be resold, modified, or redistributed without permission. To recommend this book to others, please direct them to its official listing or the Better Books website.
+
+Better Books by Smart Richard
+Small Steps. Better Every Day.</textarea>
 <label for="disclaimer">Disclaimer wording</label><textarea id="disclaimer">This book is for general education and personal development. It is not medical, mental-health, legal or financial advice. Adapt activities to your own abilities and circumstances, and seek qualified professional guidance when needed. Individual results vary.</textarea>
 <label for="authorNote">Author's note (optional; paste approved version or leave blank)</label><textarea id="authorNote" placeholder="Paste the approved author's note here if it is not already in the manuscript."></textarea>
 <label for="closing">Book-specific closing instructions (optional)</label><textarea id="closing" placeholder="Any book-specific closing section or instructions."></textarea>
@@ -78,8 +85,18 @@ footer{text-align:center;color:var(--muted);padding:10px 16px 30px;font-size:13p
 <h2>4. Standard Better Books structure</h2>
 <p>Use this framework as appropriate to the manuscript. If a section already exists, keep it and do not duplicate it.</p>
 <ol>
-<li>Cover using the uploaded image unchanged</li><li>Copyright page and disclaimer (front only)</li><li>Author's note / introduction</li><li>Clickable table of contents</li><li>Chapters in the manuscript's existing order</li><li>Challenge, action plan, worksheets or reflection record when relevant</li><li>Closing chapter / epilogue, if supplied</li><li>“Discover More from Smart Richard” resource page</li>
+<li><b>Cover</b> — use the approved uploaded cover unchanged.</li>
+<li><b>Author's Note</b> — include only if supplied/approved; never invent one.</li>
+<li><b>Disclaimer</b> — standard page, once only.</li>
+<li><b>Copyright</b> — use the commercial or free-companion wording selected by book type, once only.</li>
+<li><b>Clickable Table of Contents</b> — proper Kindle navigation.</li>
+<li><b>Introduction and main manuscript</b> — preserve approved wording and chapter order.</li>
+<li><b>Challenges, action plans and worksheets</b> — retain if supplied; format for readability.</li>
+<li><b>Conclusion / epilogue</b> — preserve the approved ending.</li>
+<li><b>Discover More from Smart Richard</b> — standard final page with clickable links and the QR code below.</li>
 </ol>
+<p class="hint"><b>Manuscript rule:</b> the pasted manuscript ends at the book's final full stop. Do not put copyright, disclaimer, QR code, resource links or standard closing page inside the manuscript; the framework adds these separately. Detect and remove accidental duplicates without deleting real book content.</p>
+<div class="coverbox" style="align-items:center"><div class="coverpreview" style="width:150px;min-height:150px"><img src="./better_books_qr.png" alt="QR code linking to the official Better Books website" style="width:100%"></div><div style="flex:1;min-width:220px"><b>Official Better Books QR code</b><p class="hint">Scans to the official Better Books website. Use this QR image on the final “Discover More” page and include a clickable text link beside it. Keep it black on white, at a readable size, with clear white space around it. Test the embedded QR code before delivery.</p><button type="button" class="secondary" id="downloadQr">Download QR code (PNG)</button></div></div>
 <p class="hint">Standard links: <b>Better Books website</b> — https://smartrichardsg.github.io/BETTER-BOOKS-by-Smart-Richard/ · <b>Better System app</b> — https://smartrichardsg.github.io/-Better-System-App-/ · <b>Better Life companion page</b> — https://smartrichardsg.github.io/-Better-System-App-/better-life.html · <b>Feedback</b> — SmartRichardsg@gmail.com</p>
 </section>
 
@@ -102,6 +119,10 @@ function applyProject(p){ids.forEach(id=>{if(p[id]!==undefined){const el=$(id);i
 function showCover(){const box=$("coverPreview");box.innerHTML=coverData?'<img alt="Uploaded book cover preview" src="'+coverData+'">':'Cover preview<br><small>Choose an image</small>'}
 $("cover").addEventListener("change",e=>{const f=e.target.files&&e.target.files[0];if(!f)return;if(f.size>12*1024*1024){$("status").textContent="Cover is larger than 12 MB. Please choose a smaller image.";e.target.value="";return}const r=new FileReader();r.onload=()=>{coverData=r.result;showCover();$("status").textContent="Cover loaded. Export the project backup to keep it with your book details."};r.readAsDataURL(f)});
 $("clearCover").onclick=()=>{coverData="";$("cover").value="";showCover()};
+const commercialCopyright="Copyright © 2026 Smart Richard. All rights reserved.\n\nNo part of this book may be reproduced, copied, distributed, republished, or transmitted in any form or by any means, whether electronic or mechanical, without prior written permission from the author, except for brief quotations used in reviews, criticism, or other uses permitted by applicable copyright law.\n\nThis book may not be resold, modified, or redistributed without permission. To recommend this book to others, please direct them to its official listing or the Better Books website.\n\nBetter Books by Smart Richard\nSmall Steps. Better Every Day.";
+const freeBookletCopyright="Copyright © 2026 Smart Richard. All rights reserved.\n\nThis free companion booklet is provided to help readers understand and apply the Better Books philosophy. You may download and share the link to the official Better Books website so that others can obtain their own copy.\n\nPlease do not sell, modify, or redistribute the booklet itself without prior written permission from the author.\n\nBetter Books by Smart Richard\nSmall Steps. Better Every Day.";
+$("kind").addEventListener("change",()=>{$("copyright").value=$("kind").value==="Short companion booklet"?freeBookletCopyright:commercialCopyright});
+$("downloadQr").onclick=()=>{const a=document.createElement("a");a.href="./better_books_qr.png";a.download="better_books_qr.png";document.body.appendChild(a);a.click();a.remove();$("status").textContent="QR code download requested. Keep better_books_qr.png with the project files and provide it to the EPUB production workflow."};
 function updateWords(){const t=$("manuscript").value.trim();const n=t?t.split(/\s+/).length:0;$("wordStatus").textContent=`${n.toLocaleString()} words · ${$("manuscript").value.length.toLocaleString()} characters`;return n}
 $("countWords").onclick=updateWords;$("manuscript").addEventListener("input",updateWords);
 $("loadExample").onclick=()=>{if(!confirm("Replace the manuscript box with a short example?"))return;$("manuscript").value="BETTER EXAMPLE\\nSmall Steps. Better Every Day.\\n\\nIntroduction\\nThis is a sample paragraph showing how a manuscript can be pasted into the app. Replace this sample with your complete, approved manuscript before generating a production brief.\\n\\nChapter 1: Start Small\\nChoose one useful action. Do it consistently, record what happens, and review your progress. Keep the language clear and practical.\\n\\nConclusion\\nSmall steps can help you make steady progress.";updateWords();$("status").textContent="Example loaded. Replace it with your actual manuscript."};
@@ -123,21 +144,25 @@ function generateBrief(){
  "- Keep the manuscript's chapter order and meaning. Identify missing/ambiguous material rather than inventing it.",
  "- Detect existing front matter and closing sections. Do not duplicate any section that is already present.",
  "- Use clear, warm, practical language consistent with Better Books: small steps, useful actions, simple explanations.",
- "FIXED BOOK STRUCTURE:",
- "- Cover",
- `- Copyright page (wording below) and disclaimer at the front only${p.front?"; do not repeat either at the back.":"."}`,
- "- Author's note if supplied, then introduction if present",
- p.nav?"- A proper clickable table of contents and working chapter navigation.":"- A table of contents if appropriate.",
- "- All supplied chapters in their original order, with semantic chapter headings",
- "- Existing challenge, action plan, worksheets or reflection record where relevant; do not invent a section if it does not fit",
- "- Existing closing chapter or epilogue",
- p.links?"- One final “Discover More from Smart Richard” page using the standard links below, styled consistently and without duplicate contact pages.":"- One concise final resource/contact page if appropriate.",
+ "FIXED BOOK STRUCTURE — FOLLOW THIS ORDER:",
+ "1. Cover using the approved uploaded cover image unchanged.",
+ "2. Author's Note, only if an approved note is supplied or already in the manuscript; do not invent one.",
+ "3. Disclaimer page.",
+ "4. Copyright page using the selected wording below.",
+ p.nav?"5. Clickable Table of Contents with working Kindle navigation.":"5. Table of Contents if appropriate.",
+ "6. Introduction and main manuscript; preserve all supplied chapters in their original order and use semantic headings.",
+ "7. Supplied challenges, action plans, worksheets and reflection records where relevant; do not invent irrelevant sections.",
+ "8. Supplied conclusion or epilogue. The approved manuscript ends at its final full stop.",
+ p.links?"9. Final ‘Discover More from Smart Richard’ page. It is generated by this framework, not pasted into the manuscript. Include the standard clickable links and the official QR image asset (better_books_qr.png).":"9. Final resource/contact page if appropriate.",
+ "MANUSCRIPT BOUNDARY: The manuscript contains book content only and ends at the last full stop of the conclusion/epilogue. Do not expect copyright, disclaimer, QR code, resource links, or standard closing pages inside it. Detect and remove duplicate standard pages if accidentally pasted into the manuscript, while preserving genuine authored content.",
+ "COPYRIGHT MODEL: "+(p.kind==="Short companion booklet"?"FREE COMPANION BOOKLET — sharing the official link is allowed; do not sell/alter/redistribute the booklet itself.":"COMMERCIAL BOOK — no redistribution or resale without permission."),
  "COPYRIGHT TEXT:\n"+p.copyright,
- "DISCLAIMER TEXT:\n"+p.disclaimer,
+ "DISCLAIMER TEXT (place before copyright, once only):\n"+p.disclaimer,
  p.authorNote?"AUTHOR'S NOTE TO USE IF NOT ALREADY IN MANUSCRIPT:\n"+p.authorNote:"",
  p.closing?"BOOK-SPECIFIC CLOSING INSTRUCTIONS:\n"+p.closing:"",
  "STANDARD RESOURCE LINKS:",
  "- Better Books website: https://smartrichardsg.github.io/BETTER-BOOKS-by-Smart-Richard/",
+ "- QR code image asset: better_books_qr.png. It encodes exactly the Better Books website URL above. Embed this image in the final resource page at a readable size, preserve a clear quiet zone, and verify it scans after insertion. If the asset is unavailable in the AI workspace, generate a replacement QR code from the exact URL above and test it; do not substitute another destination.",
  "- Better System app: https://smartrichardsg.github.io/-Better-System-App-/",
  "- Better Life companion page: https://smartrichardsg.github.io/-Better-System-App-/better-life.html",
  "- Feedback: SmartRichardsg@gmail.com",
@@ -148,7 +173,10 @@ function generateBrief(){
  "- Avoid forced page breaks in ordinary flowing text. Keep chapter headings with their first paragraph where feasible. Avoid orphaned headings, broken lists, clipping, overlapping text and excessive blank space.",
  p.forms?"- Format worksheets and action records with generous spacing, clear labels, and room to write; ensure they remain legible on small screens.":"- Keep any worksheets legible on small screens.",
  "- Keep links clickable. Include the supplied cover image as the EPUB cover and proper metadata.",
- "- Copyright and disclaimer must appear once at the front; check there is no duplicate copy at the back.",
+ "- Front-matter order is Author's Note (only if supplied) → Disclaimer → Copyright → clickable Table of Contents → Introduction/main content.",
+ "- Copyright and disclaimer each appear once only at the front; never repeat them at the back.",
+ "- The final resource page must contain the tested QR code image and a clickable text link to the same official website, plus the other standard links/contact details.",
+ "- Special case: ‘Short companion booklet’ uses the free companion copyright wording; other book types use the commercial copyright wording unless the author explicitly overrides it.",
  "QUALITY ASSURANCE — REQUIRED BEFORE CALLING IT FINAL:",
  "- Editorial check: confirm all manuscript sections are present and in the correct order; check headings, links, repeated sections and spelling without unapproved rewrites.",
  "- Technical check: validate EPUB ZIP structure, XML/XHTML, OPF manifest/spine, navigation, image references and internal links.",
@@ -210,7 +238,7 @@ $("importProject").onclick=()=>$("projectFile").click();
 $("projectFile").onchange=async e=>{const f=e.target.files&&e.target.files[0];if(!f)return;try{const p=JSON.parse(await f.text());applyProject(p);$("status").textContent="Project backup imported."}catch(err){$("status").textContent="Could not import this JSON project file."}e.target.value=""};
 $("saveLocal").onclick=()=>{try{const p=readProject();p.coverData="";localStorage.setItem("betterBooksCreatorProject",JSON.stringify(p));localStorage.setItem("betterBooksCreatorPrompt",$("prompt").value);$("status").textContent="Saved text and settings in this browser. The cover image is not stored here; export a project backup to preserve it."}catch(e){$("status").textContent="Browser storage is full. Your current form remains open. Export a project backup and avoid relying on browser storage."}};
 $("loadLocal").onclick=()=>{try{const raw=localStorage.getItem("betterBooksCreatorProject");if(!raw){$("status").textContent="No saved project found in this browser.";return}const p=JSON.parse(raw);p.prompt=localStorage.getItem("betterBooksCreatorPrompt")||"";applyProject(p);$("status").textContent="Saved project loaded."}catch(e){$("status").textContent="Could not load the saved project."}};
-$("clearAll").onclick=()=>{if(!confirm("Clear the current form? Export a project backup first if you want to keep it."))return;ids.forEach(id=>{const el=$(id);if(el.type==="checkbox")el.checked=["preserve","reflow","nav","links","front","forms"].includes(id);else if(id==="author")el.value="Smart Richard";else if(id==="tagline")el.value="Small Steps. Better Every Day.";else if(id==="copyright")el.value="Copyright © 2026 Smart Richard. All rights reserved. Please do not reproduce, redistribute, sell, or alter this book without permission.";else if(id==="disclaimer")el.value="This book is for general education and personal development. It is not medical, mental-health, legal or financial advice. Adapt activities to your own abilities and circumstances, and seek qualified professional guidance when needed. Individual results vary.";else el.value=""});coverData="";$("cover").value="";$("prompt").value="";showCover();updateWords();$("status").textContent="Form cleared."};
+$("clearAll").onclick=()=>{if(!confirm("Clear the current form? Export a project backup first if you want to keep it."))return;ids.forEach(id=>{const el=$(id);if(el.type==="checkbox")el.checked=["preserve","reflow","nav","links","front","forms"].includes(id);else if(id==="author")el.value="Smart Richard";else if(id==="tagline")el.value="Small Steps. Better Every Day.";else if(id==="copyright")el.value="Copyright © 2026 Smart Richard. All rights reserved.\n\nNo part of this book may be reproduced, copied, distributed, republished, or transmitted in any form or by any means, whether electronic or mechanical, without prior written permission from the author, except for brief quotations used in reviews, criticism, or other uses permitted by applicable copyright law.\n\nThis book may not be resold, modified, or redistributed without permission. To recommend this book to others, please direct them to its official listing or the Better Books website.\n\nBetter Books by Smart Richard\nSmall Steps. Better Every Day.";else if(id==="disclaimer")el.value="This book is for general education and personal development. It is not medical, mental-health, legal or financial advice. Adapt activities to your own abilities and circumstances, and seek qualified professional guidance when needed. Individual results vary.";else el.value=""});coverData="";$("cover").value="";$("prompt").value="";showCover();updateWords();$("status").textContent="Form cleared."};
 updateWords();
 </script>
 </body>
